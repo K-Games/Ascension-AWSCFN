@@ -2,6 +2,13 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Ascension Server",
 
+  "Mappings" : {
+    "RegionMap" : {
+      "us-west-1"      : { "64" : "ami-31490d51" },
+      "ap-southeast-2" : { "64" : "ami-dc361ebf" }
+    }
+  },
+
   "Resources": {
     "AscensionVPC": {
       "Type": "AWS::EC2::VPC",
@@ -99,7 +106,7 @@
       "Properties": {
         "DisableApiTermination": "false",
         "InstanceInitiatedShutdownBehavior": "stop",
-        "ImageId": "ami-dc361ebf",
+        "ImageId": { "Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "64"]},
         "InstanceType": "t2.micro",
         "KeyName": "ascServerAus",
         "Monitoring": "false",
