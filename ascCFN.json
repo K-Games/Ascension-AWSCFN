@@ -1,0 +1,206 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Ascension Server",
+
+  "Resources": {
+    "AscensionVPC": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "172.31.0.0/16",
+        "InstanceTenancy": "default",
+        "EnableDnsSupport": "true",
+        "EnableDnsHostnames": "true"
+      }
+    },
+
+    "AscensionSubnet1": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "172.31.16.0/20",
+        "AvailabilityZone" : {
+          "Fn::Select" : [ "0", { "Fn::GetAZs" : "" } ]
+        },
+        "VpcId": {
+          "Ref": "AscensionVPC"
+        }
+      }
+    },
+
+    "AscensionSubnet2": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "172.31.0.0/20",
+        "AvailabilityZone" : {
+          "Fn::Select" : [ "1", { "Fn::GetAZs" : "" } ]
+        },
+        "VpcId": {
+          "Ref": "AscensionVPC"
+        }
+      }
+    },
+
+    "AscensionSubnet3": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "172.31.32.0/20",
+        "AvailabilityZone" : {
+          "Fn::Select" : [ "2", { "Fn::GetAZs" : "" } ]
+        },
+        "VpcId": {
+          "Ref": "AscensionVPC"
+        }
+      }
+    },
+
+    "AscensionSubnetAssociation1" : {
+       "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+       "Properties" : {
+          "RouteTableId" : {
+              "Ref": "AscensionRTB"
+          },
+          "SubnetId" :  {
+              "Ref": "AscensionSubnet1"
+          }
+       }
+    },
+
+    "AscensionSubnetAssociation2" : {
+       "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+       "Properties" : {
+          "RouteTableId" : {
+              "Ref": "AscensionRTB"
+          },
+          "SubnetId" :  {
+              "Ref": "AscensionSubnet2"
+          }
+       }
+    }, 
+
+    "AscensionSubnetAssociation3" : {
+       "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+       "Properties" : {
+          "RouteTableId" : {
+              "Ref": "AscensionRTB"
+          },
+          "SubnetId" :  {
+              "Ref": "AscensionSubnet3"
+          }
+       }
+    }, 
+
+    "AscensionIgw": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+      }
+    },
+
+    "AscensionInstance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "DisableApiTermination": "false",
+        "InstanceInitiatedShutdownBehavior": "stop",
+        "ImageId": "ami-dc361ebf",
+        "InstanceType": "t2.micro",
+        "KeyName": "ascServerAus",
+        "Monitoring": "false",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Ascension-AUS01"
+          }
+        ],
+        "NetworkInterfaces": [
+          {
+            "DeleteOnTermination": "true",
+            "DeviceIndex": 0,
+            "SubnetId": {
+              "Ref": "AscensionSubnet1"
+            },
+            "GroupSet": [
+              {
+                "Ref": "sgAscTCPServerSecGroup"
+              }
+            ]
+          }
+        ]
+      }
+    },
+
+    "sgAscTCPServerSecGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "TCP 25565",
+        "VpcId": {
+          "Ref": "AscensionVPC"
+        }
+      }
+    },
+
+    "AscensionGW": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "AscensionVPC"
+        },
+        "InternetGatewayId": {
+          "Ref": "AscensionIgw"
+        }
+      }
+    },
+    "route1": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "RouteTableId": {
+          "Ref": "AscensionRTB"
+        },
+        "GatewayId": {
+          "Ref": "AscensionIgw"
+        }
+      },
+      "DependsOn": "AscensionGW"
+    },
+    "AscensionRTB": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "AscensionVPC"
+        }
+      }
+    },
+    "ingress2": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sgAscTCPServerSecGroup"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "22",
+        "ToPort": "22",
+        "CidrIp": "0.0.0.0/0"
+      }
+    },
+    "AscensionServerInbound": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sgAscTCPServerSecGroup"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "25565",
+        "ToPort": "25565",
+        "CidrIp": "0.0.0.0/0"
+      }
+    },
+    "AscensionServerOutbound": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "sgAscTCPServerSecGroup"
+        },
+        "IpProtocol": "-1",
+        "CidrIp": "0.0.0.0/0"
+      }
+    }
+  }
+}
