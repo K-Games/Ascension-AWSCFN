@@ -46,18 +46,6 @@
       }
     },
 
-    "AscensionSubnet3": {
-      "Type": "AWS::EC2::Subnet",
-      "Properties": {
-        "CidrBlock": "172.31.32.0/20",
-        "AvailabilityZone" : {
-          "Fn::Select" : [ "2", { "Fn::GetAZs" : "" } ]
-        },
-        "VpcId": {
-          "Ref": "AscensionVPC"
-        }
-      }
-    },
 
     "AscensionSubnetAssociation1" : {
        "Type" : "AWS::EC2::SubnetRouteTableAssociation",
@@ -79,18 +67,6 @@
           },
           "SubnetId" :  {
               "Ref": "AscensionSubnet2"
-          }
-       }
-    }, 
-
-    "AscensionSubnetAssociation3" : {
-       "Type" : "AWS::EC2::SubnetRouteTableAssociation",
-       "Properties" : {
-          "RouteTableId" : {
-              "Ref": "AscensionRTB"
-          },
-          "SubnetId" :  {
-              "Ref": "AscensionSubnet3"
           }
        }
     }, 
