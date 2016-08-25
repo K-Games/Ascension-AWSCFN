@@ -5,7 +5,12 @@
   "Mappings" : {
     "RegionMap" : {
       "us-west-1"      : { "64" : "ami-31490d51" },
-      "ap-southeast-2" : { "64" : "ami-dc361ebf" }
+      "ap-southeast-2" : { "64" : "ami-dc361ebf" },
+      "ap-southeast-1" : { "64" : "ami-a59b49c6" },
+      "us-east-1" : { "64" : "ami-6869aa05" },
+      "us-west-2" : { "64" : "ami-7172b611" },
+      "eu-central-1" : { "64" : "ami-ea26ce85" },
+      "eu-west-1" : { "64" : "ami-f9dd458a" }
     }
   },
 
@@ -88,8 +93,10 @@
         "Monitoring": "false",
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "Ascension-Server"
+            "Key": "Name", "Value": {"Fn::Join" : [ "-", [ "Ascension", { "Ref" : "AWS::Region" }] ]}
+          },
+          {
+            "Key": "Region", "Value": { "Ref" : "AWS::Region" }
           }
         ],
         "NetworkInterfaces": [
