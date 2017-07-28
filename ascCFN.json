@@ -4,12 +4,16 @@
 
   "Mappings" : {
     "RegionMap" : {
-      "us-west-1"      : { "64" : "ami-23e8a343" },
-      "us-west-2" : { "64" : "ami-5ec1673e" },
-      "ap-southeast-1" : { "64" : "ami-a59b49c6" },
-      "ap-southeast-2" : { "64" : "ami-db704cb8" },
-      "eu-central-1" : { "64" : "ami-f9619996" },
-      "eu-west-1" : { "64" : "ami-9398d3e0" }
+		"us-east-1" : { "64" : "ami-a4c7edb2" },
+		"us-east-2" : { "64" : "ami-8a7859ef" },
+		"us-west-1" : { "64" : "ami-327f5352" },
+		"us-west-2" : { "64" : "ami-6df1e514" },
+		"ca-central-1" : { "64" : "ami-a7aa15c3" },
+		"eu-west-1" : { "64" : "ami-d7b9a2b1" },
+		"eu-central-1" : { "64" : "ami-82be18ed" },
+		"eu-west-2" : { "64" : "ami-ed100689" },
+		"ap-southeast-1" : { "64" : "ami-77af2014" },
+		"ap-southeast-2" : { "64" : "ami-10918173" }
     }
   },
 
